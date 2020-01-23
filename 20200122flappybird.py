@@ -1,4 +1,5 @@
-# 2020/1/22 start project
+# 2020/1/22 完成主体功能
+# 2020/1/23 新增GAME OVER显示及计分功能
 
 import pygame, os, random
 
@@ -55,17 +56,21 @@ class Wall(object):
     def move(self):
         self.x -= 3
 
-font = pygame.font.SysFont('microsoft Yahei',60)
+class Scoreboard(object):
+    color = (12,36,64)
+    def __init__(self,score):
+        self.score = score
+    def scoreup(self):
+        self.score += 1
 
 if __name__ == '__main__':
-    x = WINDOW_W/2
-    y = WINDOW_H/2
-    vx = 0
-    vy = 2 * 100
-    bird = Bird(x,y,vx,vy,0,0)
+    my_font = pygame.font.SysFont("microsoft Yahei", 40)
+    bird = Bird(WINDOW_H/2,WINDOW_W/2,0,200,0,0)
     wall = Wall(WINDOW_W,random.randint(100,WINDOW_H-100))
+    scoreboard = Scoreboard(0)
     walllist = []
     walllist.append(wall)
+    presentwallindex = len(walllist)-1
     while True:
         lastwallpos = walllist[len(walllist)-1].x
         for event in pygame.event.get():
@@ -80,12 +85,18 @@ if __name__ == '__main__':
             walllist.append(newwall)
         if bird.death == 1:
             screen.fill((0,0,0))
-            #text = font.render('Game Over!',False,(255,255,255))
-            #screen.bilt(text,(100,100))
+            gameovertext = my_font.render("GAME OVER!", True, (255,255,255))
+            screen.blit(gameovertext,(WINDOW_W/2-120,WINDOW_H/2))
         else:
+            if walllist[presentwallindex].x <= bird.x - 30:
+                scoreboard.scoreup()
+                presentwallindex += 1
             pygame.draw.circle(screen, bird.color, (int(bird.x), int(bird.y)), 15)
             for eachwall in walllist:
                 pygame.draw.rect(screen, eachwall.color, ((eachwall.x,0),(eachwall.length,eachwall.h)))
                 pygame.draw.rect(screen, eachwall.color, ((eachwall.x,eachwall.h + eachwall.interval),(eachwall.length,WINDOW_H)))
+        scoretextstr = "Score: " + str(scoreboard.score)
+        scoretext = my_font.render(scoretextstr,True,(255,255,255))
+        screen.blit(scoretext,(0,0))
         pygame.display.update()
         time_passed = clock.tick(FPS)
