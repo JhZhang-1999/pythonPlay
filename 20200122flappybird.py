@@ -1,5 +1,5 @@
 # 2020/1/22 完成主体功能
-# 2020/1/23 新增GAME OVER显示及计分功能
+# 2020/1/23 上午 新增GAME OVER显示及计分功能
 
 import pygame, os, random
 
